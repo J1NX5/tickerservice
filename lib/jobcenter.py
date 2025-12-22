@@ -2,6 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import time
 import os
+from lib.yahoofinance import YahooFinanceModul
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,7 +24,8 @@ class Jobcenter:
         return self.__scheduler.start()
 
     def get_ticker(self):
-        pass
+        yfm = YahooFinanceModul()
+        yfm.get_ticker()
 
 
 if __name__ == "__main__":
