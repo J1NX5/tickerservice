@@ -5,6 +5,8 @@ import pyarrow.parquet as pq
 import time
 from datetime import datetime
 import logging
+from pathlib import Path
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,10 +21,11 @@ logging.basicConfig(
 class YahooFinanceModul:
 
     def __init__(self):
+        self.__BASE_DIR = Path(__file__).parent.parent
         self.__symbol_list = self.load_symbols()
 
     def load_symbols(self):
-        with open('../symbols.yml', 'r') as file:
+        with open(f'{self.__BASE_DIR}/symbols.yml', 'r') as file:
             data = yaml.safe_load(file)
         return data
 
@@ -45,7 +48,7 @@ class YahooFinanceModul:
         table = pa.Table.from_pydict(row)
 
         filename = self._make_filename(symbol)
-        pq.write_table(table, '../ticker/' + filename)
+        pq.write_table(table, f'{self.__BASE_DIR}/ticker/{filename}')
         return None
 
 
