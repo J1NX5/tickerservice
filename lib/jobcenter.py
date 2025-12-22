@@ -1,7 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
-import time
-import os
 from lib.yahoofinance import YahooFinanceModul
 
 logging.basicConfig(
