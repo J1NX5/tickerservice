@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 import logging
 from pathlib import Path
-from database import DBManager
+from lib.database import DBManager
 
 logging.basicConfig(
     level=logging.INFO,
