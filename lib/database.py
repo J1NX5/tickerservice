@@ -58,4 +58,14 @@ class DBManager:
             ''', (  symbol, datetime, open, high, low, close, volume )
         ) 
         return self.conn.commit()
+    
+    def check_symbol(self, symb):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT 1 FROM ticker_table WHERE symbol = ? LIMIT 1", (  symb, )) 
+        return cursor.fetchone()
+    
+    def get_last_ts_of_symbol(self, symb):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT MAX(datetime) FROM ticker_table;") 
+        return cursor.fetchone()
 
