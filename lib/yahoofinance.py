@@ -43,6 +43,7 @@ class YahooFinanceModul:
 
     
     def get_history_data(self, per, interv):
+        logging.info("Run: get_history_data() in yahoofinance.py ")
         for s in self.__symbol_list['symbols']['stocks']:
             ticker = yf.Ticker(s)
             hist_data = ticker.history(period=per, interval=interv).reset_index()

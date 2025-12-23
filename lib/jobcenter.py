@@ -16,7 +16,7 @@ class Jobcenter:
 
     def __init__(self):
         self.__scheduler = BackgroundScheduler()
-        self.__scheduler.add_job(self.get_ticker, 'interval', minutes=1)
+        self.__scheduler.add_job(self.get_hist_data, 'interval', minutes=1)
 
     def start(self):
         return self.__scheduler.start()
@@ -24,7 +24,10 @@ class Jobcenter:
     def get_ticker(self):
         yfm = YahooFinanceModul()
         yfm.get_ticker()
-
+    
+    def get_hist_data(self):
+        yfm = YahooFinanceModul()
+        yfm.get_history_data("1d","1m")
 
 if __name__ == "__main__":
     jc = Jobcenter()
