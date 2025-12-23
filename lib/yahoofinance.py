@@ -3,10 +3,10 @@ import yaml
 import pyarrow as pa
 import pyarrow.parquet as pq
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 from pathlib import Path
-from lib.database import DBManager
+from database import DBManager
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,38 +41,17 @@ class YahooFinanceModul:
             # print(f'Symbol: {e}, Data:{tdata.info}')
             self._write_file(e, tdata.info)
 
-
-    '''
-    Look if the symbol is in database
-    if symbol is in db get the last timestamp and set this to start and today to end call get_history_by_range
-    if not call get_history_data with period 8d interval 1m
-    '''
     def get_history_data(self):
-        for s in self.__symbol_list['symbols']['stocks']:
-            check_symbol = self.__dbo.check_symbol(s)
-            if check_symbol:
-                last_ts = self.__dbo.get_last_ts_of_symbol(s)[0]
-                today_ts = self.get_ts_for_today()
-                if self.check_day_different(last_ts, today_ts) > 8:
-                    self.get_history_first_run("8d","1m")
-                else:
-                    self.get_history_by_range(s, "1m", last_ts, today_ts)
-            else:
-                self.get_history_first_run(s,"8d","1m")
+        now_utc = int(self.get_utc_now())
+        ds_utc_now = self.cast_utc_ts_to_iso(now_utc)
+        # for s in self.__symbol_list['symbols']['stocks']:
+        #     self.get_history_by_range(s,"1m", str(ds_utc_now))
 
-    def check_day_different(self, ts1, ts2):
-        dt1 = datetime.fromtimestamp(ts1)
-        dt2 = datetime.fromtimestamp(ts2)
-        delta = dt2 - dt1
-        days = abs(delta).days
-        return days
+    def get_utc_now(self) -> int:
+        utc_ts = datetime.now(timezone.utc).timestamp()
+        return utc_ts
 
-
-
-    def get_ts_for_today(self) -> int:
-        return int(time.time())
-
-    def get_history_first_run(self, symb, per, interv):
+    def get_history_every_minute(self, symb, per, interv):
         ticker = yf.Ticker(symb)
         hist_data = ticker.history(period=per, interval=interv).reset_index()
         for row in hist_data.itertuples(index=False):
@@ -87,10 +66,9 @@ class YahooFinanceModul:
                 int(row.Volume),
             )
 
-    def get_history_by_range(self, symb, interv, start_var, end_var):
+    def get_history_by_range(self, symb, interv, start_var):
         ticker = yf.Ticker(symb)
-        print(self.cast_ts_to_iso(start_var))
-        hist_data = ticker.history(interval=interv, start=start_var, end=end_var).reset_index()
+        hist_data = ticker.history(interval=interv, start=start_var).reset_index()
         for row in hist_data.itertuples(index=False):
             ts = int(row.Datetime.timestamp())
             self.__dbo.insert_ticker(
@@ -103,8 +81,8 @@ class YahooFinanceModul:
                 int(row.Volume),
             )
 
-    def cast_ts_to_iso(self, ts: int):
-        dt = datetime.fromtimestamp(ts)
+    def cast_utc_ts_to_iso(self, ts: int):
+        dt = datetime.fromtimestamp(ts, tz=timezone.utc)
         fmt = "%Y-%m-%d %H:%M"
         return dt.strftime(fmt)
 
