@@ -13,3 +13,7 @@
 2025-12-22 17:28:26 - INFO - Scheduler started
 2025-12-22 17:28:26 - INFO - Ticker-Service is running!
 2025-12-22 17:28:39 - INFO - Program ending
+2025-12-22 20:17:26 - INFO - Connected to WebSocket.
+2025-12-22 20:17:26 - INFO - WebSocket connection closed.
+2025-12-23 09:42:14 - ERROR - $META: possibly delisted; no price data found  (period=1y) (Yahoo error = "1m data not available for startTime=1734943334 and endTime=1766479334. Only 8 days worth of 1m granularity data are allowed to be fetched per request.")
+2025-12-23 09:42:15 - ERROR - $IBM: possibly delisted; no price data found  (period=1y) (Yahoo error = "1m data not available for startTime=1734943335 and endTime=1766479335. Only 8 days worth of 1m granularity data are allowed to be fetched per request.")
