@@ -8,4 +8,4 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ~/ticker:/app/ticker
+      - ~/ticker_data:/app/data/
