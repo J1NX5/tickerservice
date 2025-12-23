@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 import logging
 from pathlib import Path
-from lib.database import DBManager
+from database import DBManager
 
 logging.basicConfig(
     level=logging.INFO,
@@ -56,8 +56,7 @@ class YahooFinanceModul:
                 if self.check_day_different(last_ts, today_ts) > 8:
                     self.get_history_first_run("8d","1m")
                 else:
-                    dd = self.check_day_different(last_ts, today_ts)
-                    self.get_history_by_range(s, f'{dd}d', "1m", last_ts)
+                    self.get_history_by_range(s, "1m", last_ts, today_ts)
             else:
                 self.get_history_first_run(s,"8d","1m")
 
@@ -88,10 +87,10 @@ class YahooFinanceModul:
                 int(row.Volume),
             )
 
-    def get_history_by_range(self, symb, per, interv, start_var):
+    def get_history_by_range(self, symb, interv, start_var, end_var):
         ticker = yf.Ticker(symb)
         print(self.cast_ts_to_iso(start_var))
-        hist_data = ticker.history(period=per, interval=interv, start=start_var).reset_index()
+        hist_data = ticker.history(interval=interv, start=start_var, end=end_var).reset_index()
         for row in hist_data.itertuples(index=False):
             ts = int(row.Datetime.timestamp())
             self.__dbo.insert_ticker(
